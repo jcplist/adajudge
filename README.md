@@ -60,6 +60,8 @@ sudo cp isolate.conf /usr/local/etc/isolate
 # Misc
 
 ## override semantic css
+file `semantic/src/site/collections/table.overrides`
+```
 /*******************************
          Site Overrides
 *******************************/
@@ -76,6 +78,7 @@ sudo cp isolate.conf /usr/local/etc/isolate
     padding-left: '';
     padding-right: ''
 }
+```
 
 # Issue
 Kindly submit any issue you found on github.
