@@ -60,6 +60,9 @@ async function updateMeta (id, prob) {
   if (_.has(json, 'compileEXFile')) prob.compileEXFile = _.get(json, 'compileEXFile');
   // eslint-disable-next-line require-atomic-updates
   if (_.has(json, 'compileEXLink')) prob.compileEXLink = _.get(json, 'compileEXLink');
+  if (_.has(json, 'runtimeEXFile')) prob.runtimeEXFile = _.get(json, 'runtimeEXFile');
+  if (_.has(json, 'runtimeEXDir')) prob.runtimeEXDir = _.get(json, 'runtimeEXDir');
+  if (_.has(json, 'seccomp')) prob.seccomp = _.get(json, 'seccomp');
 }
 
 async function updateTestdata (id, prob) {

@@ -115,10 +115,10 @@ export async function compile (worker_id, cppFiles, execName, GPP, GPPLink) {
     cg: true,
     'box-id': worker_id,
     meta: path.join(metaDir, worker_id.toString()),
-    mem: 1 << 20,
-    'cg-mem': 1 << 20,
-    time: 20,
-    'wall-time': 30,
+    mem: 1 << 30,
+    'cg-mem': 1 << 30,
+    time: 60,
+    'wall-time': 70,
     fsize: 1 << 20,
     'full-env': true,
     process: true,
@@ -146,14 +146,14 @@ export async function compile (worker_id, cppFiles, execName, GPP, GPPLink) {
   return result;
 }
 
-export async function run (worker_id, exec, inFile, outFile, errFile, timeLimit, memLimit = (1 << 20), args = []) {
+export async function run (worker_id, exec, inFile, outFile, errFile, timeLimit, memLimit = (1 << 20), seccomp = true, args = []) {
   // const timeLimitCeil = Math.ceil(timeLimit);
   const timeLimitCeil = timeLimit;
   if (!memLimit) {
     memLimit = 1 << 20;
   }
   const opt = {
-    z: 1,
+    z: seccomp ? 1 : 0,
     cg: true,
     'box-id': worker_id,
     meta: path.join(metaDir, worker_id.toString()),

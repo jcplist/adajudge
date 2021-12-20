@@ -29,7 +29,7 @@ const schema = Schema({
   },
   quota: {
     type: Number,
-    default: 5
+    default: 20
   },
   hasSpecialJudge: {
     type: Boolean,
@@ -37,7 +37,7 @@ const schema = Schema({
   },
   notGitOnly: {
     type: Boolean,
-    default: false
+    default: true
   },
   hasPartialScorePerTestdata: {
     type: Boolean,
@@ -73,7 +73,13 @@ const schema = Schema({
   compileEXArg: [String],
   compileEXHeader: [String],
   compileEXFile: [String],
-  compileEXLink: [String]
+  compileEXLink: [String],
+  runtimeEXFile: [String],
+  runtimeEXDir: [String],
+  seccomp: {
+    type: Boolean,
+    default: true
+  }
 });
 
 schema.plugin(autoIncrement.plugin, 'Problem');

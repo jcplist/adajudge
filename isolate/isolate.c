@@ -76,7 +76,7 @@ static int memory_limit;
 static int stack_limit;
 int block_quota;
 int inode_quota;
-static int max_processes = 1;
+static int max_processes = 0;
 static char *redir_stdin, *redir_stdout, *redir_stderr;
 static int redir_stderr_to_stdout;
 static char *set_cwd;
@@ -643,7 +643,15 @@ static void setup_seccomp(char **args)
                                   SCMP_SYS(writev), SCMP_SYS(lseek),
                                   SCMP_SYS(clock_gettime), SCMP_SYS(futex),
                                   SCMP_SYS(getpid), SCMP_SYS(gettid),
-                                  SCMP_SYS(rt_sigprocmask)};
+                                  SCMP_SYS(rt_sigprocmask),
+                                  SCMP_SYS(set_tid_address),
+                                  SCMP_SYS(set_robust_list),
+                                  SCMP_SYS(prlimit64),
+                                  SCMP_SYS(pread64),
+                                  SCMP_SYS(openat),
+                                  SCMP_SYS(rt_sigprocmask),
+                                  SCMP_SYS(rt_sigaction),
+                                  SCMP_SYS(gettimeofday)};
 
   int syscalls_whitelist_length = sizeof(syscalls_whitelist) / sizeof(int);
   

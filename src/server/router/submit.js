@@ -8,6 +8,7 @@ import Submission from '/model/submission';
 import User from '/model/user';
 import { requireLogin, checkKey, checkProblem, requireKeyOrNotGit } from '/utils';
 import fs from 'fs-extra';
+import logger from '../logger';
 
 const router = express.Router();
 
@@ -25,6 +26,9 @@ router.post('/:id', checkKey, checkProblem(), requireKeyOrNotGit, wrap(async (re
     // console.log("admin or quota sufficient.");
   } else {
     return res.status(500).send(`Problem #${req.params.id} quota used up.`);
+  }
+  if(req.body.file.length > 64*1024) {
+    return res.status(500).send('Code size exceeds the limit of 64KB.');
   }
 
   const submission = new Submission({

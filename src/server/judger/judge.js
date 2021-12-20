@@ -40,6 +40,17 @@ async function saveResult (obj, result, points = 0) {
   obj.points = points;
   return await obj.save();
 }
+
+function numaMkdir(cpu, mem, dir) {
+  return new Promise((resolve, reject) => {
+    execFile('numactl',["--cpubind="+cpu.toString(),"--membind="+mem.toString(),'mkdir','-p',dir], {},
+      (err, stdout, stderr) => {
+        if (err) return reject(err);
+        resolve(_.assignIn({ stdout, stderr }));
+      }
+    );
+  });
+}
  
 function numaCp (cpu,mem,src,dst) {
   return new Promise((resolve, reject) => {
@@ -50,6 +61,15 @@ function numaCp (cpu,mem,src,dst) {
       }
     );
   });
+}
+
+async function makeDir(newDir, dir, boxId) {
+  newDir = path.join(dir, newDir);
+  if(config.numa&&config.numaPool&&config.numaPool.length&&boxId!==undefined){
+    const poolId = (boxId*config.numaPool.length/config.maxWorkers) | 0;
+    const numaObj = config.numaPool[poolId];
+    await numaMkdir(numaObj.cpu, numaObj.mem, newDir);
+  }
 }
 
 async function copyToDir (file, dir, newName, boxId) {
@@ -126,8 +146,7 @@ export default class Judger {
     return async (compileBoxId) => {
       await reset(compileBoxId);
       this.rootDir = path.join(isolateDir, compileBoxId.toString(), 'box');
-      // await copyToDir(this.userCpp, this.rootDir, 'user.cpp', compileBoxId);
-      await copyToDir(this.userCpp, this.rootDir, 'user.c', compileBoxId);
+      await copyToDir(this.userCpp, this.rootDir, 'user.cpp', compileBoxId);
       const exFile = this.problem.compileEXFile || [];
       for (const file of exFile) {
         await copyToDir(path.join(this.problemDir, file), this.rootDir, file, compileBoxId);
@@ -136,12 +155,9 @@ export default class Judger {
       for (const file of exHeader) {
         await copyToDir(path.join(this.problemDir, file), this.rootDir, file, compileBoxId);
       }
-      // const linkArg = [].concat(GPPLink, this.problem.compileEXLink || []);
-      // const gccArg = [].concat(GPP, this.problem.compileEXArg || []);
-      // const files = [].concat('user.cpp', exFile);
-      const linkArg = [].concat(GCCLink, this.problem.compileEXLink || []);
-      const gccArg = [].concat(GCC, this.problem.compileEXArg || []);
-      const files = [].concat('user.c', exFile);
+      const linkArg = [].concat(GPPLink, this.problem.compileEXLink || []);
+      const gccArg = [].concat(GPP, this.problem.compileEXArg || []);
+      const files = [].concat('user.cpp', exFile);
       const result = await compile(compileBoxId, files, 'user', gccArg, linkArg);
       if (result.RE || result.SE || result.TLE) {
         saveResult(this.result, 'CE');
@@ -233,10 +249,18 @@ export default class Judger {
         else {
             await copyToDir(this.userExec, userTDir, 'user', worker_id);
         }
+        const exDir = this.problem.runtimeEXDir || [];
+        for (const dir of exDir) {
+          await makeDir(dir, userTDir, worker_id);
+        }
+        const exFile = this.problem.runtimeEXFile || [];
+        for (const file of exFile) {
+          await copyToDir(path.join(this.problemDir, file), userTDir, file, worker_id);
+        }
 
         const userRes = await run(worker_id, 'user',
           'prob.in', 'prob.out', 'prob.err',
-          this.problem.timeLimit, this.problem.memLimit);
+          this.problem.timeLimit, this.problem.memLimit, this.problem.seccomp);
 
         testResult.runtime = userRes.time;
         if (userRes.SE) {
@@ -264,7 +288,7 @@ export default class Judger {
         ];
         const checkerRes = await run(worker_id, 'checker',
           null, 'checker.out', 'checker.err',
-          20, 1 << 23, files);
+          20, 1 << 23, true, files);
 
         if (checkerRes.TLE) {
           throw new Error('Judge Error: Checker TLE.');

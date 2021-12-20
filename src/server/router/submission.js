@@ -64,10 +64,30 @@ router.get('/', requireLogin, wrap(async (req, res) => {
 }));
 
 const MAX_COMPILE_LOG_LEN = 10000;
+
+function removeCompilerWarning(str) {
+  var res = "";
+  var cur = "";
+  for (var i = 0; i < str.length; i++) {
+    if (str[i] == '\n') {
+      if (cur.length > 0 && !cur.includes("警告") && !cur.includes("/usr/local/lib")) {
+        res += cur + '\n';
+      }
+      cur = "";
+    } else {
+      cur += str[i];
+    }
+  }
+  if (cur.length > 0 && !cur.includes("警告") && !cur.includes("/usr/local/lib")) {
+    res += cur + '\n';
+  }
+  return res;
+}
+
 async function loadCompileErr (id) {
   try {
     const buf = await fs.readFile(path.join(config.dirs.submissions, `${id}.compile.err`));
-    const str = buf.toString();
+    const str = removeCompilerWarning(buf.toString());
     // console.log(str.length);
     if (str.length > MAX_COMPILE_LOG_LEN) return str.slice(0, MAX_COMPILE_LOG_LEN) + '\n... [The remained was omitted]\n';
     return str;
@@ -101,7 +121,7 @@ router.get('/sourceCode/:id', requireLogin, wrap(async (req, res) => {
   if (isNaN(req.params.id)) return res.status(400).send('id must be a number');
   const id = req.params.id;
   const submission = await Submission.findById(id)
-    .populate('problem', 'resource visible')
+    .populate('problem', 'resource visible notGitOnly')
     ;
 
   if (!submission) return res.status(404).send(`Submission ${id} not found.`);

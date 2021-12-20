@@ -17,6 +17,7 @@ export default Vue.extend({
                 result: 'ALL',
                 probID: '',
                 user: '',
+                score: '',
             },
         };
     },
@@ -46,6 +47,7 @@ export default Vue.extend({
             if (filter.result != 'ALL') params.result = filter.result;
             if (filter.probID) params.probID = filter.probID;
             if (filter.user) params.user = filter.user;
+            if (filter.score) params.score = filter.score;
             try {
                 result = await this.$http.get('/admin/submission/', { params });
             } catch(e) {
@@ -80,12 +82,16 @@ export default Vue.extend({
             this.getSubmissions();
         },
         async rejudgeSubmissions(pageId) {
+            if (!confirm("Are you sure? Are you sure? Are you sure?")) {
+                return;
+            }
             let result;
             const params = { skipPage: pageId };
             const filter = this.filter;
             if (filter.result != 'ALL') params.result = filter.result;
             if (filter.probID) params.probID = filter.probID;
             if (filter.user) params.user = filter.user;
+            if (filter.score) params.score = filter.score;
             try {
                 result = await this.$http.get('/admin/submission/', { params });
             } catch(e) {
