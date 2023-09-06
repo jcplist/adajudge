@@ -34,8 +34,8 @@ gulp init
 
 # Build semantic again...
 (cd semantic; gulp build)
-# Copy (or symbolic link) ./semantic to dist/static/semantic
-# cp -r semantic dist/static/
+# Copy (or symbolic link) ./semantic/dist to dist/static/semantic
+# cp -r semantic/dist dist/static/
 # use RELATIVE PATH instead of realpath:
 ln -s ../../semantic/dist dist/static/semantic
 
@@ -46,6 +46,7 @@ ln -s ../../semantic/dist dist/static/semantic
 # maximum number of numaPool: view by `numactl --hardware` command (type: Array<{cpu:${id},mem:${id}}>. The array length MUST NOT greater than the number of numa nodes, the ids of the nodes can also be found from the command output.)
 # maxWorkers: the maximum number of total workers
 # maxNodeWorkers: unknown
+# You can copy most attributes from previous year
 
 # Build
 # be sure that the default checker `src/server/cfiles/default_checker.cpp` can be compiled successfully 
@@ -54,6 +55,7 @@ cp src/server/scripts/*.sh dist/scripts/; cp src/server/scripts/*.py dist/script
 
 # Build and copy isolate (and make sure `dist/judger/isolate` exists and has setuid and execute permission (rwsr-sr-x))
 gulp isolate # and enter sudo password, sometimes it fails to prompt for password, you may need to run the below commands manually (or perhaps run 'sudo echo hi' beforehand)
+# After running the above command, check if dist/judger/isolate exist, otherwise do the follows
 # sudo rm -f isolate/isolate; sudo rm -f dist/judger/isolate;
 # (cd isolate; make isolate)
 # cp ./isolate/isolate dist/judger/
@@ -75,26 +77,6 @@ sudo chown -R root:root /dev/shm/isolate
 sudo chmod 755 /dev/shm/isolate
 sudo chmod 755 /dev/shm/isolate/META
 
-# Build gitosis from https://github.com/res0nat0r/gitosis (git submission only)
-sudo adduser --system --shell /bin/sh --gecos 'git version control' --group --disabled-password --home /home/git git
-# create ssh key: ssh-keygen
-# Initialize gitosis
-sudo -H -u git gitosis-init < ~/.ssh/id_rsa.pub
-git clone git@localhost:gitosis-admin.git
-
-# Set git config (git submission only)
-# git config --global user.email "you@example.com"
-# git config --global user.name "Your Name"
-# Copy /bin/cp to /home/git/cp with owner 'git' and set its set-user-id bit
-sudo cp /bin/cp /home/git/; sudo chown git:git /home/git/cp; sudo chmod +s /home/git/cp;
-
-# Initialize init git repository (git submission only)
-sudo cp -r git/init.git /home/git/repositories/
-sudo chown -R git:git /home/git/repositories/init.git
-sudo chmod 755 /home/git/repositories/init.git/hooks/*
-sudo cp git/serve.py /usr/local/lib/python2.7/dist-packages/gitosis-0.2-py2.7.egg/gitosis/
-# Install python(2) package 'requests' for all user (git)
-
 # Run server on port 3333
 ./start.sh
 
@@ -106,6 +88,10 @@ sudo cp git/serve.py /usr/local/lib/python2.7/dist-packages/gitosis-0.2-py2.7.eg
 # install apache2 server or nginx server and redirect connection to port 80 to http://localhost:3333/ and start the server
 # install pymongo from pip3
 # many judge_name, domain_name, email_address, ... need to be changed
+
+# to stop the judge
+# forever list
+# forever stop [id]
 ```
 
 # Misc
