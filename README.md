@@ -96,6 +96,57 @@ sudo chmod 755 /dev/shm/isolate/META
 
 # Misc
 
+## Nginx config
+file `/etc/nginx/sites-enabled/ada-judge`
+```
+server {
+  server_name ada-judge.csie.ntu.edu.tw ada-judge.csie.org;
+
+        client_max_body_size 800M;
+
+        location / {
+                proxy_pass http://127.0.0.1:9999/;
+        }
+        location ^~ /static/ {
+                root   /home/ada/adajudge2023/dist/;
+        }
+        location ^~ /semantic/ {
+                root   /home/ada/adajudge2023/dist/static/;
+        }
+        location ^~ /favicon.ico {
+                root   /home/ada/adajudge2023/dist/static/;
+        }
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/ada-judge.csie.ntu.edu.tw/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/ada-judge.csie.ntu.edu.tw/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+
+}
+
+
+
+server {
+    if ($host = ada-judge.csie.org) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = ada-judge.csie.ntu.edu.tw) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    server_name ada-judge.csie.ntu.edu.tw ada-judge.csie.org;
+
+
+    listen 80;
+    return 404; # managed by Certbot
+}
+```
+
 ## override semantic css
 file `semantic/src/site/collections/table.overrides`
 ```
