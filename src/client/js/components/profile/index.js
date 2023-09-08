@@ -75,6 +75,10 @@ export default Vue.extend({
             if(user && user.roles.indexOf('auditor') !== -1){
                 role = role === '' ? 'Auditor' : role + ' & Auditor';
             }
+            if(user && role === '')
+            {
+                user.roles.forEach((element) => role = role === '' ? '' + element : role + ' & ' + element);
+            }
             if(role === ''){
                 role = 'Auditor';
             }
