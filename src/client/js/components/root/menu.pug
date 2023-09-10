@@ -10,6 +10,7 @@ component
         a.item( v-if="user" v-link="'/submissions'" ) Submissions
         //-a.item Resource
         a.item( v-if="user && user.isAdmin" v-link="{name: 'admin'}" ) Admin
+        a.item( v-if="user && user.isTA" v-link="{name: 'ta'}" ) TA
         .item| {{(datetime-datetimebase+nowdatetime) | toFormattedTime 'MM/DD HH:mm:ss'}}
         .right.menu( v-if="user" )
           a.item( v-link="{ name: 'profile' }" ) Profile
