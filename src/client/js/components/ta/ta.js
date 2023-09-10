@@ -2,6 +2,7 @@ import Vue from 'vue';
 import template from './ta.pug';
 
 export default Vue.extend({
+    template,
     data() {
         return { 
             submissions: [],
