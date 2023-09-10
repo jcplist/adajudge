@@ -4,6 +4,7 @@ import Problems from './components/problems';
 import Problem from './components/problem';
 import Submit from './components/submit';
 import Admin from './components/admin';
+import TA from './components/ta';
 import Submissions from './components/submissions';
 import Submission from './components/submission';
 import Diff from './components/diff';
@@ -88,6 +89,16 @@ router.map({
             },
         },
     },
+    '/ta': {
+        name: 'ta',
+        component: TA.index,
+        subRoutes: {
+            '/submissions': {
+                name: 'ta.submissions',
+                component: TA.submissions,
+            },
+        },
+    },
     '/profile': {
         name: 'profile',
         component: Profile,
@@ -96,6 +107,7 @@ router.map({
 
 router.redirect({
     '/admin': '/admin/problems',
+    '/ta': '/ta/submissions',
 });
 
 export default router;

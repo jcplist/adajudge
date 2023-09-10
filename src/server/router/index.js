@@ -4,6 +4,7 @@ const routes = [
     'problem',
     'submit',
     'admin',
+    'ta',
     'homework',
     'statistic',
     'scoreboard',

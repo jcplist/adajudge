@@ -34,6 +34,13 @@ export const requireAdmin = (req, res, next) => {
   next();
 };
 
+export const requireTA = (req, res, next) => {
+  if (!req.user) return res.status(401).send(`You are not logged in`);
+  if (!req.user.isTA()) return res.status(401).send(`You are not TA`);
+
+  next();
+};
+
 export const checkProblem = (_id = 'id') => wrap(async (req, res, next) => {
   const id = parseInt(req.params[_id]);
   if (isNaN(id)) return res.status(404).send(`Problem #${id} not found`);
