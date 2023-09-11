@@ -7,7 +7,6 @@ const schema = Schema({
     homework: {
         type: Number,
         ref: 'Homework',
-        required: true,
     },
     user: {
         type: Schema.Types.ObjectId,

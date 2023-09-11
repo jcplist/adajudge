@@ -6,7 +6,6 @@ const schema = Schema({
     problem: {
         type: Number,
         ref: 'Problem',
-        required: true,
     },
     user: {
         type: Schema.Types.ObjectId,
