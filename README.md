@@ -92,6 +92,9 @@ sudo chmod 755 /dev/shm/isolate/META
 # to stop the judge
 # forever list
 # forever stop [id]
+
+# IMPORTANT!!!!!
+# If you encounter cgroup problems, stop the server, `sudo htop` kill the "[server path]/isolate" process, then use ./start.sh to restart the server
 ```
 
 # Misc
